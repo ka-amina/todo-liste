@@ -1,0 +1,107 @@
+.pace {
+    display: none;
+}
+
+.main-style {
+    min-height: 100vh;
+    background: url(../img/cover/cover-scrum-board.png) no-repeat fixed;
+    background-size: 360px;
+    background-position: right bottom;
+}
+.modal__content.active {
+    display: flex;
+}
+.modal__content {
+    display: none;
+}
+/* .task-modal{
+    position:absolute;
+    top:50%;
+    left: 50%;
+
+} */
+.task-form{
+    width: 40%;
+    height: auto;
+    position: absolute;
+    top: 0rem;
+    border-radius: 1rem;
+}
+.task-form-title{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid black;
+    margin-bottom: 2rem;
+}
+form{
+    width: 90%;
+    padding: 1rem;
+}
+.modal-footer{
+    border-top:  1px solid black;
+}
+.form-check{
+    margin-left: 1rem;
+}
+.cancel-btn{
+    background-color: white;
+    padding: .4rem;
+    border: 1px solid rgb(148, 148, 148);
+    border-radius: .25rem;
+}
+.cancel-btn:hover{
+    background-color: gray;
+    color: white;
+}
+.close-btn{
+    cursor: pointer;
+}
+.sprintcard{
+    width: 40%;
+    padding: 2rem;
+    background-color: white;
+    height: 100%;
+    position: absolute;
+    top: 0rem;
+    right: 0;
+    border-radius: 1rem 0 0 1rem;
+
+}
+.sprintcard-header{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid gray;
+    margin-bottom: 2rem;
+}
+.sprintcard-btns{
+    display: flex;
+    justify-content: end;
+    margin-top: 4rem;
+}
+.sprintcard-btns button{
+    margin-left: 1rem;
+    padding: .5rem;
+    border-radius: .25rem;
+}
+.sprintcard-btns :first-child{
+    background-color: white;
+    border: 1px solid rgb(148, 148, 148);
+}
+.sprintcard-btns :nth-child(2){
+    background-color: rgb(233, 67, 67);
+    color: white;
+    border: none;
+}
+.sprintcard-btns :last-child{
+    background-color: rgb(96, 96, 241);
+    color: white;
+    border: none;
+}
+
+
+.sprint__content.active {
+    display: block  ;
+}
+.sprint__content {
+    display: none;
+}
