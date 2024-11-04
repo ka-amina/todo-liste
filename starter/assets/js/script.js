@@ -22,26 +22,33 @@ function closeModal() {
 
 // Load tasks from local storage and display them
 function loadTasksFromLocalStorage() {
-  const tasks = JSON.parse(localStorage.getItem("tasks"));
+  const tasks = JSON.parse(localStorage.getItem("tasks"))|| [];
   tasks.forEach((task) => displayTask(task));
 }
 
 // Save tasks to local storage
 function saveTasksToLocalStorage(tasks) {
   localStorage.setItem("tasks", JSON.stringify(tasks));
-  window. location. reload()
+  window.location.reload();
 }
 
 function getAllTasksFromLocalStorage() {
-  return JSON.parse(localStorage.getItem("tasks"));
+  return JSON.parse(localStorage.getItem("tasks")) || [];
 }
 
 function displayTask(taskContent) {
   const taskCard = document.createElement("div");
-  taskCard.className = "list-group list-group-flush rounded-bottom overflow-hidden panel-body p-0 cursor-pointer";
+  taskCard.className =
+    "list-group list-group-flush rounded-bottom overflow-hidden panel-body p-0 cursor-pointer";
   taskCard.dataset.taskId = taskContent.id;
-  taskCard.innerHTML = ` 
-    <div class="list-group-item d-flex border-top-0">
+
+  taskCard.addEventListener("click", function () {
+    showSprintInfo(taskContent);
+  });
+
+  if (taskContent.status === "To Do") {
+    taskCard.innerHTML = ` 
+    <div class="list-group-item d-flex border-top-0" draggable="true">
       <div class="me-3 fs-16px">
         <i class="far fa-question-circle text-green-500 fa-fw"></i> 
       </div>
@@ -56,16 +63,42 @@ function displayTask(taskContent) {
         </div> 
       </div>
     </div>`;
-
-  taskCard.addEventListener("click", function () {
-    showSprintInfo(taskContent);
-  });
-
-  if (taskContent.status === "To Do") {
     document.getElementById("to-do-tasks").appendChild(taskCard);
   } else if (taskContent.status === "In Progress") {
+    taskCard.innerHTML = ` 
+    <div class="list-group-item d-flex border-top-0" draggable="true">
+      <div class="me-3 fs-16px">
+       <i class="fa-solid fa-circle-notch fa-rotate-90" style="color: #47c266;"></i>
+      </div>
+      <div class="flex-fill">
+        <div class="fs-14px lh-12 mb-2px fw-bold text-dark">${taskContent.title}</div>
+        <div class="mb-1 fs-12px">
+          <div class="text-gray-600 flex-1"># created in ${taskContent.date}</div>
+        </div>
+        <div class="mb-1">
+          <span class="badge bg-blue">${taskContent.priority}</span>
+          <span class="badge bg-gray-100 text-black">${taskContent.type}</span>
+        </div> 
+      </div>
+    </div>`;
     document.getElementById("in-progress-tasks").appendChild(taskCard);
   } else if (taskContent.status === "Done") {
+    taskCard.innerHTML = ` 
+    <div class="list-group-item d-flex border-top-0" draggable="true">
+      <div class="me-3 fs-16px">
+        <i class="fa-regular fa-circle-check" style="color: #47c266;"></i>
+      </div>
+      <div class="flex-fill">
+        <div class="fs-14px lh-12 mb-2px fw-bold text-dark">${taskContent.title}</div>
+        <div class="mb-1 fs-12px">
+          <div class="text-gray-600 flex-1"># created in ${taskContent.date}</div>
+        </div>
+        <div class="mb-1">
+          <span class="badge bg-blue">${taskContent.priority}</span>
+          <span class="badge bg-gray-100 text-black">${taskContent.type}</span>
+        </div> 
+      </div>
+    </div>`;
     document.getElementById("done-tasks").appendChild(taskCard);
   }
 }
@@ -107,12 +140,11 @@ document.getElementById("task-form").addEventListener("submit", function (event)
     description,
   };
 
-  const tasks = getAllTasksFromLocalStorage();
+   const tasks = getAllTasksFromLocalStorage(); // Ensures tasks is always an array
 
   if (isUpdating) {
     const taskIndex = tasks.findIndex(task => task.id === taskContent.id);
     tasks[taskIndex] = taskContent;
-
     isUpdating = false;
     currentTaskId = null;
     Swal.fire({
@@ -120,10 +152,11 @@ document.getElementById("task-form").addEventListener("submit", function (event)
       text: `Task updated to: "${taskContent.title}"`,
       icon: 'info',
       confirmButtonText: 'Got it!'
-  }).then((result) => {
-    if (result.isConfirmed){
-      saveTasksToLocalStorage(tasks);
-    }});
+    }).then((result) => {
+      if (result.isConfirmed) {
+        saveTasksToLocalStorage(tasks);
+      }
+    });
   } else {
     tasks.push(taskContent);
     Swal.fire({
@@ -132,19 +165,16 @@ document.getElementById("task-form").addEventListener("submit", function (event)
       icon: "success",
       confirmButtonText: "Nice!",
     }).then((result) => {
-      if (result.isConfirmed){
+      if (result.isConfirmed) {
         saveTasksToLocalStorage(tasks);
-      }});
+      }
+    });
   }
 
-  
   displayTask(taskContent);
-  
   modalTask.classList.remove("active");
-  
   document.getElementById("task-form").reset();
 });
-
 
 
 // browse  task card
@@ -159,11 +189,8 @@ function showSprintInfo(taskContent) {
   const targetContainer = sprintContainers[0];
   targetContainer.classList.add("active");
 
-  // Create the sprint card element
   const sprintCard = document.createElement("div");
-  sprintCard.className = "sprintcard w-100"; // Apply any necessary styling class
-
-  // Set the inner HTML of the sprint card
+  sprintCard.className = "sprintcard w-100"; 
   sprintCard.innerHTML = `
 
     <div class="sprintcard-header">
@@ -245,7 +272,6 @@ function updateTask(taskContent) {
   console.log("Loaded task for update:", taskContent);
 }
 
-
 function deleteTask(taskContent) {
   const taskElement = document.getElementById(taskContent.id);
   Swal.fire({
@@ -259,9 +285,11 @@ function deleteTask(taskContent) {
   }).then((result) => {
     if (result.isConfirmed) {
       closeCard();
-      
+
       if (taskElement) taskElement.remove();
-      const tasks = getAllTasksFromLocalStorage().filter(task => task.id !== taskContent.id);
+      const tasks = getAllTasksFromLocalStorage().filter(
+        task => task.id !== taskContent.id
+      );
       saveTasksToLocalStorage(tasks);
       Swal.fire({
         title: "Task Deleted!",
@@ -272,6 +300,3 @@ function deleteTask(taskContent) {
     }
   });
 }
-
-
-const todo= document.querySelector("to-do-tasks")
