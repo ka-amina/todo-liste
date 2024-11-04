@@ -120,7 +120,10 @@ document.getElementById("task-form").addEventListener("submit", function (event)
       text: `Task updated to: "${taskContent.title}"`,
       icon: 'info',
       confirmButtonText: 'Got it!'
-  });
+  }).then((result) => {
+    if (result.isConfirmed){
+      saveTasksToLocalStorage(tasks);
+    }});
   } else {
     tasks.push(taskContent);
     Swal.fire({
@@ -128,10 +131,13 @@ document.getElementById("task-form").addEventListener("submit", function (event)
       text: `You have added a new task: "${taskContent.title}"`,
       icon: "success",
       confirmButtonText: "Nice!",
-    });
+    }).then((result) => {
+      if (result.isConfirmed){
+        saveTasksToLocalStorage(tasks);
+      }});
   }
 
-  saveTasksToLocalStorage(tasks);
+  
   displayTask(taskContent);
   
   modalTask.classList.remove("active");
